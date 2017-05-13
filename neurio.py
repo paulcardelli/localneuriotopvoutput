@@ -45,6 +45,9 @@ pvdate = strftime('%Y%m%d')
 #status TIME  24 HH:MM
 pvtime = strftime('%H:%M')
 
+#set retries to 5
+requests.adapters.HTTPAdapter(max_retries=5)
+
 #pull json from local neurio sensor json
 pvdata = requests.get('http://'+neurioip+'/current-sample').json()
 
@@ -75,7 +78,7 @@ else:
 	fd.close()
 
 #upload the data to the pvoutput website  d=date t=time v2=Power_gen_watts v3=Power_consumed_watts v5=temp_celcius v6=genation volts
-cmd=('curl -d "d=' + pvdate + '" -d "t=' + pvtime + '" -d "v2=' + str(gen_W) + '" -d "v4=' + str(cons_W) + '" -d "v5=' + str(temp_c) + '" -d "v6=' + str(gen_V) + '" -H "X-Pvoutput-Apikey:'+ APIKEY +'" -H "X-Pvoutput-SystemId:'+ SYSTEMID +'" http://pvoutput.org/service/r2/addstatus.jsp') 
+cmd=('curl --retry 10 -d "d=' + pvdate + '" -d "t=' + pvtime + '" -d "v2=' + str(gen_W) + '" -d "v4=' + str(cons_W) + '" -d "v5=' + str(temp_c) + '" -d "v6=' + str(gen_V) + '" -H "X-Pvoutput-Apikey:'+ APIKEY +'" -H "X-Pvoutput-SystemId:'+ SYSTEMID +'" http://pvoutput.org/service/r2/addstatus.jsp') 
 
 #send the request
 ret = subprocess.call(cmd, shell=True)
